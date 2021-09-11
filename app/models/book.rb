@@ -10,4 +10,6 @@ class Book < ApplicationRecord
 	has_many :book_similiar_books
 	has_many :book_wikipedias
 	has_many :book_contents
+	belongs_to :author
+	has_many :author_books
 end
