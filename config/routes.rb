@@ -10,11 +10,7 @@ Rails.application.routes.draw do
       		get "book_details", to: "books#book_details"
       	end
       end
-      resources :authors do
-      	collection do
-      		get "author_details", to: "authors#author_details"
-      	end
-      end      
+      resources :authors 
     end
   end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

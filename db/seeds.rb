@@ -6,27 +6,31 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-#authors = JSON.parse(File.read(Rails.root.join('db/authors.json')))
+#Load authors.json file to variable
+authors = JSON.parse(File.read(Rails.root.join('db/authors.json')))
 
-#authors["authors"].each do |aut|
-	#author = Author.create(id: aut["id"], name: aut["name"], gender: aut["gender"], n_book: aut["n_books"], summary: aut["summary"], born: aut["born"], died: aut["died"])
-	#if aut["wikipedia"]
-		#AuthorWikipedia.create(author_id: aut["id"], url: aut["wikipedia"]["url"], found: aut["wikipedia"]["found"] )
-	#end
+#loop each set of data & insert into database
+authors["authors"].each do |aut|
+	Author.create(id: aut["id"], name: aut["name"], gender: aut["gender"], n_book: aut["n_books"], summary: aut["summary"], born: aut["born"], died: aut["died"])
+	if aut["wikipedia"]
+		AuthorWikipedia.create(author_id: aut["id"], url: aut["wikipedia"]["url"], found: aut["wikipedia"]["found"] )
+	end
 	
-	#if aut["countries"]
-		#aut["countries"].each do |country|
-			#AuthorCountry.create(author_id: aut["id"], country_id: country)
-		#end	
-	#end	
-	#if aut["books"]
-		#aut["books"].each do |book|
-			#AuthorBook.create(author_id: aut["id"], book_id: book)
-		#end	
-	#end	
-#end
+	if aut["countries"]
+		aut["countries"].each do |country|
+			AuthorCountry.create(author_id: aut["id"], country_id: country)
+		end	
+	end	
+	if aut["books"]
+		aut["books"].each do |book|
+			AuthorBook.create(author_id: aut["id"], book_id: book)
+		end	
+	end	
+end
 
+#Load books.json file to variable
 books = JSON.parse(File.read(Rails.root.join('db/books.json')))
+#loop each set of data & insert into database
 books["books"].each do |book|
 	Book.create(id: book["id"], content_name: book["content_name"], isbn: book["isbn"], original_title: book["original_title"], year: book["year"], author_name: book["author_name"], language_code: book["language_code"], 
 		category: book["category"], plot: book["plot"], copyright: book["copyright"], title: book["title"], average_rating: book["average_rating"], rating_count: book["rating_count"], description: book["description"], 
