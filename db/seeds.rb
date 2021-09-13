@@ -71,12 +71,13 @@ authors = JSON.parse(File.read(Rails.root.join('db/authors.json')))
 #loop each set of data & insert into database
 authors["authors"].each do |aut|
 	Author.create(id: aut["id"], name: aut["name"], gender: aut["gender"], n_book: aut["n_books"], summary: aut["summary"], born: aut["born"], died: aut["died"])
-=begin
+
 	if aut["books"]
 		aut["books"].each do |book|
 			AuthorBook.create(author_id: aut["id"], book_id: book)
 		end	
 	end	
+=begin	
 	if aut["wikipedia"]
 		AuthorWikipedia.create(author_id: aut["id"], url: aut["wikipedia"]["url"], found: aut["wikipedia"]["found"] )
 	end

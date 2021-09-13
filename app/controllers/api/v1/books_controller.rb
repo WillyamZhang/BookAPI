@@ -1,5 +1,7 @@
 class Api::V1::BooksController < ApplicationController
   def index  
+  	book = Book.all
+  	render json: book, status:200
   end
 
   # GET /api/v1/books/1
@@ -51,7 +53,6 @@ class Api::V1::BooksController < ApplicationController
   # GET /api/v1/books/by_authors?author=H. G. Wells
   def by_authors
   	#author = params[:author].gsub(",","','")
-  	#@book = Book.where("author_name in ('#{author}')").select("books.*, convert(varchar(10), books.release_date, 120) as release_date2").order("author_name")
   	author = params[:author].split(",")
   	@book = Book.where(author_id: Author.where(name: author).pluck(:id))
   							.order("author_name")
@@ -79,7 +80,6 @@ class Api::V1::BooksController < ApplicationController
 
   # GET /api/v1/books/by_related?title=Test
   def by_related  	
-  	#@book = BookSimiliarBook.includes(:book).where("books.title = ?", params[:title]).references(:book).select("book_similiar_books.book_id, book_similiar_books.book_name")
   	@book = Book.joins("left join book_similiar_books on books.id = book_similiar_books.book_id
 												left join books simBookId on book_similiar_books.book_name = simBookId.title ")
   	            .where("books.title = '#{params[:title]}'")
