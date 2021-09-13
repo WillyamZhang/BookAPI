@@ -6,27 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-#Load authors.json file to variable
-authors = JSON.parse(File.read(Rails.root.join('db/authors.json')))
-
-#loop each set of data & insert into database
-authors["authors"].each do |aut|
-	Author.create(id: aut["id"], name: aut["name"], gender: aut["gender"], n_book: aut["n_books"], summary: aut["summary"], born: aut["born"], died: aut["died"])
-	if aut["wikipedia"]
-		AuthorWikipedia.create(author_id: aut["id"], url: aut["wikipedia"]["url"], found: aut["wikipedia"]["found"] )
-	end
-	
-	if aut["countries"]
-		aut["countries"].each do |country|
-			AuthorCountry.create(author_id: aut["id"], country_id: country)
-		end	
-	end	
-	if aut["books"]
-		aut["books"].each do |book|
-			AuthorBook.create(author_id: aut["id"], book_id: book)
-		end	
-	end	
-end
+p Time.now
 
 #Load books.json file to variable
 books = JSON.parse(File.read(Rails.root.join('db/books.json')))
@@ -37,6 +17,12 @@ books["books"].each do |book|
 		loc_class: book["loc_class"], pages: book["pages"], language: book["language"], isbn13: book["isbn13"], release_date: book["release_date"], author_id: book["author"], 
 		cover: book["cover"], summary: book["summary"], content_cleaned: book["content_cleaned"], content_available: book["content_available"], n_authors: book["n_authors"])
 
+	if book["similar_books"]
+		book["similar_books"].each do |sim|		
+			BookSimiliarBook.create(book_id: book["id"], book_name: sim)
+		end	
+	end	
+=begin
 	if book["images"]
 		book["images"].each do |img|
 			BookImage.create(book_id: book["id"], url: img)
@@ -49,11 +35,6 @@ books["books"].each do |book|
 		BookGoodread.create(book_id: book["id"], url: book["goodreads"]["url"], found: book["goodreads"]["found"], year: book["goodreads"]["year"] )
 	end
 
-	if book["similar_books"]
-		book["similar_books"].each do |sim|		
-			BookSimiliarBook.create(book_id: book["id"], book_name: sim)
-		end	
-	end	
 	if book["gutenberg"]
 		BookGutenberg.create(book_id: book["id"], url: book["gutenberg"]["url"], num: book["gutenberg"]["num"])
 	end	
@@ -80,4 +61,32 @@ books["books"].each do |book|
 			BookContent.create(book_id: book["id"], title: con["title"], author_id: con["author"])
 		end	
 	end	
+=end		
 end
+
+
+#Load authors.json file to variable
+authors = JSON.parse(File.read(Rails.root.join('db/authors.json')))
+
+#loop each set of data & insert into database
+authors["authors"].each do |aut|
+	Author.create(id: aut["id"], name: aut["name"], gender: aut["gender"], n_book: aut["n_books"], summary: aut["summary"], born: aut["born"], died: aut["died"])
+=begin
+	if aut["books"]
+		aut["books"].each do |book|
+			AuthorBook.create(author_id: aut["id"], book_id: book)
+		end	
+	end	
+	if aut["wikipedia"]
+		AuthorWikipedia.create(author_id: aut["id"], url: aut["wikipedia"]["url"], found: aut["wikipedia"]["found"] )
+	end
+	
+	if aut["countries"]
+		aut["countries"].each do |country|
+			AuthorCountry.create(author_id: aut["id"], country_id: country)
+		end	
+	end		
+=end
+end
+
+p Time.now

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       		get "by_pages", to: "books#by_pages"
       		get "by_related", to: "books#by_related"
       		get "book_details", to: "books#book_details"
+      		get "test_n_query", to: "books#test_n_query"
       	end
       end
       resources :authors 

@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 2021_09_11_141402) do
 
   create_table "book_classes", force: :cascade do |t|
     t.integer "book_id"
-    t.string "class"
+    t.string "classes"
   end
 
   create_table "book_contents", force: :cascade do |t|
@@ -88,7 +88,7 @@ ActiveRecord::Schema.define(version: 2021_09_11_141402) do
 
   create_table "book_similiar_books", force: :cascade do |t|
     t.integer "book_id"
-    t.string "book"
+    t.string "book_name"
   end
 
   create_table "book_wikipedias", force: :cascade do |t|
@@ -120,7 +120,7 @@ ActiveRecord::Schema.define(version: 2021_09_11_141402) do
     t.integer "author_id"
     t.string "cover"
     t.string "summary"
-    t.boolean "content_clean"
+    t.boolean "content_cleaned"
     t.boolean "content_available"
     t.integer "n_authors"
   end
