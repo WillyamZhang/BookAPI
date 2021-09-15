@@ -69,11 +69,9 @@ class Api::V1::BooksController < ApplicationController
 
   # GET /api/v1/books/by_pages?min=50&max=&from=&to=
   def by_pages
-  	min = ((params[:min].nil? || params[:min] == "") ? "-1" : params[:min])
+  	min = ((params[:min].nil? || params[:min] == "") ? "0" : params[:min])
   	max = ((params[:max].nil? || params[:max] == "") ? "99999" : params[:max])
-  	from = ((params[:from].nil? || params[:from] == "") ? "-1" : params[:from])
-  	to = ((params[:to].nil? || params[:to] == "") ? "-1" : params[:to])
-  	@book = Book.where("(pages <= isnull(#{min},pages) or (pages >= isnull(#{max},pages))) or (pages between isnull(#{from},pages) and isnull(#{to},pages))")
+  	@book = Book.where("(pages >= #{min} and pages <= #{max})")
   							.order("pages")
   	render json: @book, status: 200
   end
@@ -85,7 +83,11 @@ class Api::V1::BooksController < ApplicationController
   	            .where("books.title = '#{params[:title]}'")
   	            .select("simBookId.id, book_similiar_books.book_name as title, simBookId.author_name, simBookId.average_rating, simBookId.rating_count, simBookId.release_date, simBookId.year, simBookId.pages, simBookId.author_id")
   	            .order("book_similiar_books.book_name")
-  	render json: @book, status: 200
+		if @book.length > 0
+			render json: @book, status: 200
+		else
+			render json: "404 not found", status: 404
+		end  	              	
   end
 
   # GET /api/v1/books/by_book_details
