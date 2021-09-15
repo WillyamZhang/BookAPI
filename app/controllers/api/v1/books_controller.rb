@@ -20,9 +20,9 @@ class Api::V1::BooksController < ApplicationController
   def create
   	book = Book.new(book_params)
   	if book.save
-  		render json: book, status: 200
+  		render json: book, status: :created
   	else
-  		render json: {error: "Error creating book"}
+  		render json: {message: book.errors, error: I18n.t("code422"),status: 422}, status: 422
   	end
   end
 
@@ -31,9 +31,9 @@ class Api::V1::BooksController < ApplicationController
   def update
   	book = Book.find(params[:id])
   	if book.update(book_params)
-  		render json: book, status: 200
+  		render json: {success: I18n.t("code200"),status: 200}, status: 200
   	else
-  		render json: {error: "Error update book"}
+  		render json: {message: book.errors, error: I18n.t("code422"),status: 422}, status: 422
   	end
   end
 
@@ -42,9 +42,9 @@ class Api::V1::BooksController < ApplicationController
   def destroy
   	book = Book.find(params[:id])
   	if book.destroy
-  		render json: book, status: 200
+  		render json: {success: I18n.t("code200"),status: 200}, status: 200
   	else
-  		render json: {error: "Error delete book"}
+  		render json: {message: book.errors, error: I18n.t("code422"),status: 422}, status: 422
   	end
 
   end
@@ -56,7 +56,11 @@ class Api::V1::BooksController < ApplicationController
   	author = params[:author].split(",")
   	@book = Book.where(author_id: Author.where(name: author).pluck(:id))
   							.order("author_name")
-  	render json: @book, status: 200
+  	if @book.length > 0  		
+  		render json: @book, status: 200
+  	else
+  		render json: {error: I18n.t("code404"),status: 404}, status: 404
+  	end  	
   end
 
   # GET /api/v1/books/by_years?year=H. G. Wells
@@ -64,16 +68,24 @@ class Api::V1::BooksController < ApplicationController
   	year = params[:year].split(",")
   	@book = Book.where(year: year)
   							.order("year")
-  	render json: @book, status: 200
+  	if @book.length > 0  		
+  		render json: @book, status: 200
+  	else
+  		render json: {error: I18n.t("code404"),status: 404}, status: 404
+  	end 
   end
 
   # GET /api/v1/books/by_pages?min=50&max=&from=&to=
   def by_pages
-  	min = ((params[:min].nil? || params[:min] == "") ? "0" : params[:min])
-  	max = ((params[:max].nil? || params[:max] == "") ? "99999" : params[:max])
+  	min = ((params[:min].nil? || params[:min] == "") ? "-1" : params[:min])
+  	max = ((params[:max].nil? || params[:max] == "") ? "-1" : params[:max])
   	@book = Book.where("(pages >= #{min} and pages <= #{max})")
   							.order("pages")
-  	render json: @book, status: 200
+  	if @book.length > 0  		
+  		render json: @book, status: 200
+  	else
+  		render json: {error: I18n.t("code404"),status: 404}, status: 404
+  	end 
   end
 
   # GET /api/v1/books/by_related?title=Test
@@ -83,11 +95,11 @@ class Api::V1::BooksController < ApplicationController
   	            .where("books.title = '#{params[:title]}'")
   	            .select("simBookId.id, book_similiar_books.book_name as title, simBookId.author_name, simBookId.average_rating, simBookId.rating_count, simBookId.release_date, simBookId.year, simBookId.pages, simBookId.author_id")
   	            .order("book_similiar_books.book_name")
-		if @book.length > 0
-			render json: @book, status: 200
-		else
-			render json: "404 not found", status: 404
-		end  	              	
+		if @book.length > 0  		
+  		render json: @book, status: 200
+  	else
+  		render json: {error: I18n.t("code404"),status: 404}, status: 404
+  	end 	              	
   end
 
   # GET /api/v1/books/by_book_details
@@ -99,7 +111,11 @@ class Api::V1::BooksController < ApplicationController
   							.select("books.title, books.author_id, authors.name as author_name, books.average_rating, books.rating_count, books.release_date , books.year, books.pages")
   							.order("books.title")
   							.paginate(page: page, per_page: perPage)
-  	render json: @book, status: 200
+  	if @book.length > 0  		
+  		render json: @book, status: 200
+  	else
+  		render json: {error: I18n.t("code404"),status: 404}, status: 404
+  	end 
   end  
 
   #GET /api/v1/books/test_n_query?book_id=1
@@ -108,7 +124,12 @@ class Api::V1::BooksController < ApplicationController
   	BookSimiliarBook.includes(:book).where(book_id: params[:book_id]).each do |a| 
 		  stringArr << "#{a.book.title} was similiar with book #{a.book_name}"
 		end  	
-		render json: stringArr, status: 200
+
+		if stringArr.length > 0  		
+  		render json: stringArr, status: 200
+  	else
+  		render json: {error: I18n.t("code404"),status: 404}, status: 404
+  	end 
   end
 
   private

@@ -13,4 +13,6 @@ class Book < ApplicationRecord
 	has_many :book_contents
 	belongs_to :author, optional: true
 	has_many :author_books
+
+	validates_presence_of :content_name
 end

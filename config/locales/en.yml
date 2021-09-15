@@ -31,3 +31,9 @@
 
 en:
   hello: "Hello world"
+  code200: "OK"
+  code201: "Created"
+  code204: "No Content"
+  code401: "Unauthorized"
+  code404: "Data Not Found"
+  code422: "Unprocessable Entity"
