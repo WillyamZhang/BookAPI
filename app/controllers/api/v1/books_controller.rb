@@ -92,10 +92,13 @@ class Api::V1::BooksController < ApplicationController
 
   # GET /api/v1/books/by_book_details
   def book_details
+  	page = ((params[:page].nil? || params[:page] == "") ? "1" : params[:page])
+  	perPage = ((params[:per_page].nil? || params[:per_page] == "") ? 10 : params[:per_page])
   	@book = Book.includes(:author)
   							.references(:author)
   							.select("books.title, books.author_id, authors.name as author_name, books.average_rating, books.rating_count, books.release_date , books.year, books.pages")
   							.order("books.title")
+  							.paginate(page: page, per_page: perPage)
   	render json: @book, status: 200
   end  
 
