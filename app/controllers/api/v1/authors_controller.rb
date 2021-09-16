@@ -1,4 +1,5 @@
 class Api::V1::AuthorsController < ApplicationController
+	before_action :authorize_request
 	# GET /api/v1/authors
   # GET /api/v1/authors.json
   def index	
@@ -11,9 +12,7 @@ class Api::V1::AuthorsController < ApplicationController
   	if @author.length > 0  		
   		render json: @author, status: 200
   	else
-  		render json: {error: I18n.t("code404"),
-									  status: 404
-									}, status: 404
+  		render json: {error: I18n.t("code404"), status: 404}, status: 404
   	end 
   end
 

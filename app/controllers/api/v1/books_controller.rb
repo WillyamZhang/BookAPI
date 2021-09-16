@@ -1,4 +1,5 @@
 class Api::V1::BooksController < ApplicationController
+	before_action :authorize_request
   def index  
   	book = Book.all
   	render json: book, status:200
@@ -53,7 +54,7 @@ class Api::V1::BooksController < ApplicationController
   # GET /api/v1/books/by_authors?author=H. G. Wells
   def by_authors
   	#author = params[:author].gsub(",","','")
-  	author = params[:author].split(",")
+  	author = (!params[:author].nil? ? params[:author].split(",") : "")
   	@book = Book.where(author_id: Author.where(name: author).pluck(:id))
   							.order("author_name")
   	if @book.length > 0  		
@@ -65,7 +66,7 @@ class Api::V1::BooksController < ApplicationController
 
   # GET /api/v1/books/by_years?year=H. G. Wells
   def by_years
-  	year = params[:year].split(",")
+  	year = (!params[:year].nil? ? params[:year].split(",") : "")
   	@book = Book.where(year: year)
   							.order("year")
   	if @book.length > 0  		
@@ -77,9 +78,9 @@ class Api::V1::BooksController < ApplicationController
 
   # GET /api/v1/books/by_pages?min=50&max=&from=&to=
   def by_pages
-  	min = ((params[:min].nil? || params[:min] == "") ? "-1" : params[:min])
-  	max = ((params[:max].nil? || params[:max] == "") ? "-1" : params[:max])
-  	@book = Book.where("(pages >= #{min} and pages <= #{max})")
+  	min = ((params[:min].nil? || params[:min] == "") ? "null" : params[:min])
+  	max = ((params[:max].nil? || params[:max] == "") ? "null" : params[:max])
+  	@book = Book.where("(pages >= isnull(#{min}, pages) and pages <= isnull(#{max}, pages))")
   							.order("pages")
   	if @book.length > 0  		
   		render json: @book, status: 200
@@ -121,7 +122,8 @@ class Api::V1::BooksController < ApplicationController
   #GET /api/v1/books/test_n_query?book_id=1
   def test_n_query
   	stringArr = []
-  	BookSimiliarBook.includes(:book).where(book_id: params[:book_id]).each do |a| 
+#  	BookSimiliarBook.includes(:book).where(book_id: params[:book_id]).each do |a| 
+		BookSimiliarBook.includes(:book).where(book_id: params[:book_id]).each do |a| 
 		  stringArr << "#{a.book.title} was similiar with book #{a.book_name}"
 		end  	
 
