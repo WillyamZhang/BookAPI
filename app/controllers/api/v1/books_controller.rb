@@ -80,7 +80,7 @@ class Api::V1::BooksController < ApplicationController
   def by_pages
   	min = ((params[:min].nil? || params[:min] == "") ? "null" : params[:min])
   	max = ((params[:max].nil? || params[:max] == "") ? "null" : params[:max])
-  	@book = Book.where("(pages >= isnull(#{min}, pages) and pages <= isnull(#{max}, pages))")
+  	@book = Book.where("(pages >= isnull(?, pages) and pages <= isnull(?, pages))", min, max)
   							.order("pages")
   	if @book.length > 0  		
   		render json: @book, status: 200
@@ -93,7 +93,7 @@ class Api::V1::BooksController < ApplicationController
   def by_related  	
   	@book = Book.joins("left join book_similiar_books on books.id = book_similiar_books.book_id
 												left join books simBookId on book_similiar_books.book_name = simBookId.title ")
-  	            .where("books.title = '#{params[:title]}'")
+  	            .where("books.title = ?", "#{params[:title]}")
   	            .select("simBookId.id, book_similiar_books.book_name as title, simBookId.author_name, simBookId.average_rating, simBookId.rating_count, simBookId.release_date, simBookId.year, simBookId.pages, simBookId.author_id")
   	            .order("book_similiar_books.book_name")
 		if @book.length > 0  		
@@ -122,8 +122,7 @@ class Api::V1::BooksController < ApplicationController
   #GET /api/v1/books/test_n_query?book_id=1
   def test_n_query
   	stringArr = []
-#  	BookSimiliarBook.includes(:book).where(book_id: params[:book_id]).each do |a| 
-		BookSimiliarBook.includes(:book).where(book_id: params[:book_id]).each do |a| 
+		BookSimiliarBook.where(book_id: params[:book_id]).each do |a| 
 		  stringArr << "#{a.book.title} was similiar with book #{a.book_name}"
 		end  	
 
